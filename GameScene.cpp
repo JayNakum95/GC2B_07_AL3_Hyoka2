@@ -13,6 +13,11 @@ GameScene::~GameScene() {
 	delete modelBlock_;
 	modelBlock_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
 	delete debugCamera_;   // デバッグカメラのインスタンスを解放
+	delete modelSkydome_;       // スカイドームのインスタンスを解放
+	modelSkydome_ = nullptr;    // メモリリークを防ぐためにポインタをnullptrに設定
+	
+	delete player_;
+	player_ = nullptr; // プレイヤーのポインタをnullptrに設定
 }
 void GameScene::Initialize() {
 	// 初期化処理の実装
@@ -20,9 +25,14 @@ void GameScene::Initialize() {
 	camera_.Initialize();
 	debugCamera_ = new DebugCamera(1080,720); // デバッグカメラのインスタンスを作成
 
+	    // スカイドームモデルの作成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true); // スカイドームの初期化
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 
-
-
+	skydome_ = new Skydome();
+	skydome_->Initialize(modelSkydome_,&camera_);
+	player_ = new Player();
+	player_->Initialize(modelPlayer_,&camera_);
 
 	uint32_t kNumBlockHorizontal = 20; // 水平方向のブロック数
 	uint16_t kNumBlockVertical = 10;   // 垂直方向のブロック数
@@ -66,6 +76,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 
+	player_->Update();
+	skydome_->Update();
+	
 	#ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
@@ -98,6 +111,8 @@ void GameScene::Update() {
 void GameScene::Draw() {
 	// 描画処理の実装
 	Model::PreDraw();
+	skydome_->Draw();
+	player_->Draw();
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
@@ -107,5 +122,6 @@ void GameScene::Draw() {
 
 		}
 	}
+	
 	Model::PostDraw();
 }
