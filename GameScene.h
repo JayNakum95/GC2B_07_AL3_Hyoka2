@@ -11,7 +11,10 @@ class GameScene {
 	void Draw();
 
 	private:
-	KamataEngine::Model* model_ = nullptr;
-	    std::vector<KamataEngine::WorldTransform*> worldTransformBlocks_;
+	KamataEngine::Model* modelBlock_ = nullptr;
+	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
+	KamataEngine::Camera camera_; 
+	bool isDebugCameraActive_ = false; 
+	KamataEngine::DebugCamera* debugCamera_; // デバッグカメラ
 
 };
