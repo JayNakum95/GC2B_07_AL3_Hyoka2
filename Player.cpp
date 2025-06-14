@@ -25,7 +25,7 @@ void Player::Update() {
 
 
 	worldTransform_.TransferMatrix(); // ワールド変換の更新
-	worldTransform_.translation_ = {0, 2, 0};
+	worldTransform_.translation_ = {1, 1, 0};
 	worldTransform_.rotation_ = {0, -90, 0};
 }
 void Player::Draw() {
