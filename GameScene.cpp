@@ -19,6 +19,9 @@ GameScene::~GameScene() {
 
 	delete player_;
 	player_ = nullptr; // プレイヤーのポインタをnullptrに設定
+	delete mapChipField_; // マップチップフィールドのインスタンスを解放
+	mapChipField_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+	
 }
 void GameScene::Initialize() {
 	// 初期化処理の実装
@@ -33,10 +36,13 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, &camera_);
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	GenerateBlocks();
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18); // マップチップの位置を取得
+	player_->Initialize(modelPlayer_, &camera_, playerPosition);
+
+
 }
 
 void GameScene::Update() {
@@ -57,7 +63,8 @@ void GameScene::Update() {
 		camera_.TransferMatrix();
 	} else {
 		camera_.UpdateMatrix();
-		camera_.TransferMatrix(); // ← 忘れずに追加
+		camera_.TransferMatrix(); 
+
 	}
 
 	// 更新処理の実装
