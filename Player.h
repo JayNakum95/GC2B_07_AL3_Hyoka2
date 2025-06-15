@@ -8,6 +8,7 @@ public:
 	void Update();
 	void Draw();
 	KamataEngine::Vector3 velocity_ = {0, 0, 0};
+	const KamataEngine::WorldTransform& GetWorldTransform() const { return worldTransform_; } // ワールド変換を取得
 	
 private:
 	uint32_t textureHandle_ = 0; // テクスチャハンドル
@@ -17,6 +18,7 @@ private:
 	static inline const float kAcceleration = 0.008f; // 加速度
 	static inline const float kAttenuation = 0.058f; // 減衰率
 	static inline const float kLimitRunSpeed = 0.3f; // 最大速度
+	
 	enum class LRDirection {
 		kRight, // 右方向
 		kLeft,  // 左方向

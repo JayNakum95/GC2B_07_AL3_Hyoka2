@@ -26,3 +26,5 @@ inline Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, c
     Matrix4x4 tm = MathUtility::MakeTranslateMatrix(translate);
     return MultiplyMatrix(MultiplyMatrix(sm, rm), tm);
 }
+inline Vector3 operator+ (const Vector3& v1, Vector3& v2) { 
+    return Vector3{v1.x + v2.x, v1.y + v2.y, v1.z + v2.z}; }
