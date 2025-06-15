@@ -9,7 +9,7 @@ public:
 	void Draw();
 	KamataEngine::Vector3 velocity_ = {0, 0, 0};
 	const KamataEngine::WorldTransform& GetWorldTransform() const { return worldTransform_; } // ワールド変換を取得
-	
+	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }                    // 速度を取得
 private:
 	uint32_t textureHandle_ = 0; // テクスチャハンドル
 	KamataEngine::Model* model_;

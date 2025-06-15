@@ -27,6 +27,7 @@ void GameScene::Initialize() {
 	// 初期化処理の実装
 	modelBlock_ = Model::Create();
 	camera_.Initialize();
+	
 	debugCamera_ = new DebugCamera(1080, 720); // デバッグカメラのインスタンスを作成
 
 	// スカイドームモデルの作成
@@ -43,16 +44,17 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18); // マップチップの位置を取得
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 	cameraController_ = new CameraController();
-	cameraController_->Initialize();
+	cameraController_->Initialize(&camera_);
 	cameraController_->SetTarget(player_); // カメラコントローラーにプレイヤーを設定
-	cameraController_->Reset();            // カメラの位置をプレイヤーに合わせてリセット
-
+	cameraController_->SetMovableArea(11.0, 88.0, 6.0, 94.0f); // カメラの移動可能領域を設定
+	cameraController_->Reset();                                    // カメラの位置をプレイヤーに合わせてリセット
 }
 
 void GameScene::Update() {
 
 	player_->Update();
 	skydome_->Update();
+
 	cameraController_->Update(); // カメラコントローラーの更新
 
 #ifdef _DEBUG
@@ -68,7 +70,7 @@ void GameScene::Update() {
 		camera_.TransferMatrix();
 	} else {
 		camera_.UpdateMatrix();
-		camera_.TransferMatrix(); 
+		camera_.TransferMatrix();
 
 	}
 
