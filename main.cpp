@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include "KamataEngine.h"
 #include "GameScene.h"
+#include <crtdbg.h>
 using namespace KamataEngine;
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -24,6 +25,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	gameScene = nullptr; // ポインタをnullptrに設定
 
 	KamataEngine::Finalize();
-
+	// メモリリークチェック
+	_CrtDumpMemoryLeaks(); // メモリリークのチェックを行う
 	return 0;
 }

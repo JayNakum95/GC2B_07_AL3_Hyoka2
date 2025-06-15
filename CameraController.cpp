@@ -12,7 +12,6 @@ CameraController::~CameraController() {
 void CameraController::Initialize(KamataEngine::Camera* camera) {   
 camera_ = camera;  
 };  
-#include <algorithm> // Ensure this header is included for std::lerp  
 
 void CameraController::Update() {  
 
