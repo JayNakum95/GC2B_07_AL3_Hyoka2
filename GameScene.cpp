@@ -41,6 +41,7 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	GenerateBlocks();
+	player_->SetMapChipField(mapChipField_);                                  // プレイヤーにマップチップフィールドを設定
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18); // マップチップの位置を取得
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 	cameraController_ = new CameraController();

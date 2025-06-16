@@ -34,5 +34,29 @@ public:
 	void ResetMapChipData();
 	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
 	KamataEngine::Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yindex);
+	struct IndexSet {
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+	IndexSet GetMapChipIndexByPosition(const KamataEngine::Vector3& position) {
+		IndexSet indexSet;
+		indexSet.xIndex = static_cast<uint32_t>(position.x / kBlockWidth);
+		indexSet.yIndex = static_cast<uint32_t>(position.y / kBlockHeight);
+		return indexSet;
+	}
+	struct Rect {
+		float left;
+		float right;
+		float top;
+		float bottom;
+	};
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
+		Rect rect;
+		rect.left = xIndex * kBlockWidth;
+		rect.right = rect.left + kBlockWidth;
+		rect.top = yIndex * kBlockHeight;
+		rect.bottom = rect.top + kBlockHeight;
+		return rect;
+	}
 
 };

@@ -63,5 +63,14 @@ KamataEngine::Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, u
 	
 	return KamataEngine::Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVerticle - 1 - yIndex), 0);
 		
-}
+} 
+MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
+	KamataEngine::Vector3 centre = GetMapChipPositionByIndex(xIndex, yIndex);
+	Rect rect;
+	rect.left = centre.x - kBlockWidth / 2.0f;
+	rect.right = centre.x + kBlockWidth / 2.0f;
+	rect.top = centre.y + kBlockHeight / 2.0f;
+	rect.bottom = centre.y - kBlockHeight / 2.0f;
+	return rect;
 
+}

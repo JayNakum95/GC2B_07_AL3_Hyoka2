@@ -24,9 +24,26 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2; // プレイヤーの初期回転を設定（90度回転）
 }
 void Player::Update() {
+	Player::playerMoveSet(); // プレイヤーの移動設定を呼び出す
+	// 落下・着地処理
+	CollisionMapInfo collisionMapInfo;
+	collisionMapInfo.moveAmount = velocity_;
+	MapCollisionCheck(collisionMapInfo); // マップとの当たり判定チェック
+	
+	// 行列更新
+	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransform_.TransferMatrix();
+}
+
+void Player::Draw() {
+	// プレイヤーの描画処理
+	// ここでは、プレイヤーのモデルを描画するロジックを実装します。
+	model_->Draw(worldTransform_, *camera_); // モデルの描画
+}
+
+void Player::playerMoveSet() {
 	Vector3 acceleration = {0, 0, 0};
 
-	// 落下・着地処理
 	if (!onGround_) {
 		velocity_.y += -kGravityAcceleration;
 
@@ -42,7 +59,7 @@ void Player::Update() {
 			worldTransform_.translation_.y = 1.0f;
 			velocity_.y = 0.0f;
 			onGround_ = true;
-			velocity_.x *= (1.0f - (5*kAttenuation));
+			velocity_.x *= (1.0f - (5 * kAttenuation));
 		}
 	} else {
 		// 地面から離れたら空中にする
@@ -105,13 +122,31 @@ void Player::Update() {
 		turnTimer_ = 0.0f;
 	}
 
-	// 行列更新
-	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-	worldTransform_.TransferMatrix();
+
+
+}
+Vector3 Player::CornerPosition(const Vector3& centre, Corner corner) {
+	switch (corner) {
+	case kLeftTop:
+		return {centre.x - kWidth / 2.0f, centre.y + kHeight / 2.0f, centre.z};
+	case kRightTop:
+		return {centre.x + kWidth / 2.0f, centre.y + kHeight / 2.0f, centre.z};
+	case kLeftBottom:
+		return {centre.x - kWidth / 2.0f, centre.y - kHeight / 2.0f, centre.z};
+	case kRightBottom:
+		return {centre.x + kWidth / 2.0f, centre.y - kHeight / 2.0f, centre.z};
+	default:
+		return {0, 0, 0}; // デフォルト値
+	}
+	Vector3 offsetTable[kNumCorner] = {
+	    {-kWidth / 2.0f, kHeight / 2.0f,  0}, // 左上
+	    {kWidth / 2.0f,  kHeight / 2.0f,  0}, // 右上
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0}, // 左下
+	    {kWidth / 2.0f,  -kHeight / 2.0f, 0}  // 右下
+	};
+	return centre + offsetTable[static_cast <uint32_t>(corner)];
 }
 
-void Player::Draw() {
-	// プレイヤーの描画処理
-	// ここでは、プレイヤーのモデルを描画するロジックを実装します。
-	model_->Draw(worldTransform_, *camera_); // モデルの描画
+void Player::MapCollisionCheck(CollisionMapInfo& info) { 
+	
 }
