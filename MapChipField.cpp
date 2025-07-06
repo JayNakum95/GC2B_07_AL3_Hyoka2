@@ -51,16 +51,30 @@ MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex
 }
 
 KamataEngine::Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) {
-	return KamataEngine::Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVerticle - 1 - yIndex), 0);
+	return KamataEngine::Vector3(kBlockWidth * xIndex , kBlockHeight * (kNumBlockVerticle - 1 - yIndex) + kBlockHeight / 2.0f, 0);
 }
 
 MapChipField::IndexSet MapChipField::GetMapChipIndexByPosition(const KamataEngine::Vector3& position) {
 	IndexSet indexSet = {};
-	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth / 2) / kBlockWidth);
-indexSet.yIndex = static_cast<uint32_t>((kNumBlockVerticle - 1) - ((position.y + kBlockHeight / 2) / kBlockHeight));
 
-	return indexSet; //
+	int xRaw = static_cast<int>((position.x + kBlockWidth / 2) / kBlockWidth);
+	int yRaw = static_cast<int>((position.y + kBlockHeight / 2) / kBlockHeight);
+
+	if (xRaw < 0)
+		xRaw = 0;
+	if (xRaw >= static_cast<int>(kNumBlockHorizontal))
+		xRaw = kNumBlockHorizontal - 1;
+
+	if (yRaw < 0)
+		yRaw = 0;
+	if (yRaw >= static_cast<int>(kNumBlockVerticle))
+		yRaw = kNumBlockVerticle - 1;
+
+	indexSet.xIndex = static_cast<uint32_t>(xRaw);
+	indexSet.yIndex = kNumBlockVerticle - 1 - static_cast<uint32_t>(yRaw);
+	return indexSet;
 }
+
 
 MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
 	KamataEngine::Vector3 centre = GetMapChipPositionByIndex(xIndex, yIndex);

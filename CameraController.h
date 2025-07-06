@@ -7,7 +7,9 @@ public:
 	~CameraController();
 	void Initialize(KamataEngine::Camera* camera);
 	void Update();
-	void SetTarget(Player* target) { target_ = target; } // プレイヤーのターゲットを設定
+	void SetTarget(Player* target) { 
+		target_ = target;
+	} // プレイヤーのターゲットを設定
 	void Reset();
 	void SetMovableArea(float left, float right, float bottom, float top) {
 		movableArea_.left = left;

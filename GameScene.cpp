@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	GenerateBlocks();
 	player_->SetMapChipField(mapChipField_);                                  // プレイヤーにマップチップフィールドを設定
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18); // マップチップの位置を取得
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 17); // マップチップの位置を取得
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(&camera_);
@@ -99,7 +99,10 @@ void GameScene::Draw() {
 			if (!worldTransformBlock) {
 				continue;
 			}
-			modelBlock_->Draw(*worldTransformBlock, camera_);
+			modelBlock_->Draw(*worldTransformBlock, camera_); // ブロックの描画
+			
+
+
 			
 		}
 	}
