@@ -22,9 +22,10 @@ private:
 	KamataEngine::Camera* camera_;
 	KamataEngine::WorldTransform worldTransform_;
 	MapChipField* mapChipField_ = nullptr;            // マップチップフィールドへのポインタ
-	static inline const float kAcceleration = 0.001f; // 加速度
+	static inline const float kAcceleration = 0.008f; // 加速度
 	static inline const float kAttenuation = 0.058f;  // 減衰率
 	static inline const float kAttenuationLanding = 0.01f; // 着地時の減衰率
+	static inline const float kAttenuationWall = 0.05f;    // 壁に当たったときの減衰率
 	static inline const float kLimitRunSpeed = 0.3f;  // 最大速度
 
 
@@ -52,6 +53,9 @@ private:
 	KamataEngine::Vector3 CornerPosition(const KamataEngine::Vector3& centre, Corner corner);
 	void MapCollisionCheckJump(CollisionMapInfo& Info); // マップとの当たり判定チェック
 	void MapCollisionCheckFall(CollisionMapInfo& info); // マップとの当たり判定チェック（落下時）
+	void MapCollisionRight(CollisionMapInfo& info);     // マップとの当たり判定チェック（右側）
+	void checkWallCollision(const CollisionMapInfo& info);    // 壁との当たり判定チェック
+	void MapCollisionLeft(CollisionMapInfo& info);      // マップとの当たり判定チェック（左側）
 	void ChangePlayerCondition(const CollisionMapInfo &Info);     // プレイヤーの状態を変更
 
 	LRDirection lrDirection_ = LRDirection::kRight;         // 左右方向の移動
@@ -66,6 +70,7 @@ private:
 	static inline const float kHeight = 0.8f;               // プレイヤーの高さ
 	static inline const float kBlank = 0.02f;  
     const float kCollisionYOffset = 1;
+	const float kCheckOffsetY = 0.3f; // 当たり判定のオフセット
 	void ApplyCollisionResult(const CollisionMapInfo& info);
 	void IfHitCeiling(CollisionMapInfo& info);
 };
