@@ -21,6 +21,16 @@ GameScene::~GameScene() {
 	player_ = nullptr; // プレイヤーのポインタをnullptrに設定
 	delete mapChipField_; // マップチップフィールドのインスタンスを解放
 	mapChipField_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+
+	delete skydome_; // スカイドームのインスタンスを解放
+	skydome_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+    
+	delete cameraController_; // カメラコントローラーのインスタンスを解放
+	cameraController_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+
+	delete enemy_; // 敵キャラクターのインスタンスを解放
+	enemy_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+
 	
 }
 void GameScene::Initialize() {
@@ -33,15 +43,18 @@ void GameScene::Initialize() {
 	// スカイドームモデルの作成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true); // スカイドームの初期化
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
-
+	modelEnemy_ = Model::CreateFromOBJ("enemy", true); 
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
 	player_ = new Player();
-	
+	enemy_ = new Enemy(); // 敵キャラクターのインスタンスを作成
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	GenerateBlocks();
 	player_->SetMapChipField(mapChipField_);                                  // プレイヤーにマップチップフィールドを設定
+	enemy_->SetMapChipField(mapChipField_);
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(6, 18);
+	enemy_->Initialize(modelEnemy_, &camera_,enemyPosition); // 敵キャラクターの初期化
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 17); // マップチップの位置を取得
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 	cameraController_ = new CameraController();
@@ -54,6 +67,7 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	player_->Update();
+	enemy_->Update(); // 敵キャラクターの更新
 	skydome_->Update();
 
 	cameraController_->Update(); // カメラコントローラーの更新
@@ -95,6 +109,7 @@ void GameScene::Draw() {
 	Model::PreDraw();
 	skydome_->Draw();
 	player_->Draw();
+	enemy_->Draw();
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {

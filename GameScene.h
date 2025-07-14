@@ -3,6 +3,7 @@
 #include <Vector>
 #include "Skydome.h"
 #include "player.h"
+#include "Enemy.h"
 #include "MapChipField.h"
 #include "CameraController.h"
 class GameScene {
@@ -23,7 +24,10 @@ class GameScene {
 	KamataEngine::DebugCamera* debugCamera_; // デバッグカメラ
 	KamataEngine::Model* modelSkydome_ = nullptr; // スカイドームモデル
 	KamataEngine::Model* modelPlayer_ = nullptr;
+	KamataEngine::Model* modelEnemy_ = nullptr; // 敵キャラクターモデル
+
 	Skydome* skydome_=nullptr;
+	Enemy* enemy_ = nullptr; // 敵キャラクター
 	Player* player_ = nullptr;
 	MapChipField* mapChipField_;
 	CameraController* cameraController_ = nullptr; // カメラコントローラー

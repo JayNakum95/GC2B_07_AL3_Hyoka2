@@ -16,7 +16,8 @@ public:
 	const KamataEngine::WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
-	void playerMoveSet(); // プレイヤーの移動設定
+	void playerMoveSet(); 
+
 
 private:
 	uint32_t textureHandle_ = 0;
@@ -63,8 +64,8 @@ private:
 	static inline const float kJumpAcceleration = 0.3f;
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
-	static inline const float kBlank = 0.02f;
-	const float kCollisionYOffset = 1;
+	static inline const float kBlank = 0.01f;
+	const float kCollisionYOffset = 0.3f;
 	const float kCheckOffsetY = 0.3f;
 
 	void ApplyCollisionResult(const CollisionMapInfo& info);

@@ -5,6 +5,7 @@
 #include "MapChipField.h"
 #include <algorithm>
 #include <numbers>
+#include <iostream>
 
 Player::Player() {}
 
@@ -215,11 +216,15 @@ void Player::MapCollisionCheckJump(CollisionMapInfo& info) {
 		}
 		if (hit) {
 			indexSet = mapChipField_->GetMapChipIndexByPosition(positionNew[static_cast<int>(Corner::kLeftBottom)]);
-			MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-			const float playerRadius = kHeight / 2.0f; // 自キャラの半径（高さの半分）
-			float beforePlayerY = worldTransform_.translation_.y;
-			info.moveAmount.y = std::max(0.0f, (rect.top - beforePlayerY) + (playerRadius + kBlank));
-			info.isLanded = true; // 着地した
+		    MapChipField::IndexSet indexSetNow;
+		    indexSetNow = mapChipField_->GetMapChipIndexByPosition(worldTransform_.translation_);
+		    if (indexSetNow.yIndex != indexSet.yIndex) {
+			    MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+			    const float playerRadius = kHeight / 2.0f; // 自キャラの半径（高さの半分）
+			    float beforePlayerY = worldTransform_.translation_.y;
+			    info.moveAmount.y = std::max(0.0f, (rect.top - beforePlayerY) + (playerRadius + kBlank));
+			    info.isLanded = true; // 着地した
+		    }
 		}
 	}
 
@@ -238,22 +243,19 @@ void Player::MapCollisionRight(CollisionMapInfo& info) {
 
 	bool hit = false;
 	MapChipType mapChipType;
-	MapChipType mapChipTypeNext;
 	MapChipField::IndexSet indexSet;
 
 	// 右上
 	indexSet = mapChipField_->GetMapChipIndexByPosition(positionNew[static_cast<int>(Corner::kRightTop)]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex + 1, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
+	if (mapChipType == MapChipType::kBlock ) {
 		hit = true;
 	}
 
 	// 右下
 	indexSet = mapChipField_->GetMapChipIndexByPosition(positionNew[static_cast<int>(Corner::kRightBottom)]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex + 1, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
+	if (mapChipType == MapChipType::kBlock ) {
 		hit = true;
 	}
 
@@ -280,20 +282,17 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 	}
 	bool hit = false;
 	MapChipType mapChipType;
-	MapChipType mapChipTypeNext;
 	MapChipField::IndexSet indexSet;
 	// 左上
 	indexSet = mapChipField_->GetMapChipIndexByPosition(positionNew[static_cast<int>(Corner::kLeftTop)]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex - 1, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
+	if (mapChipType == MapChipType::kBlock ) {
 		hit = true;
 	}
 	// 左下
 	indexSet = mapChipField_->GetMapChipIndexByPosition(positionNew[static_cast<int>(Corner::kLeftBottom)]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex - 1, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
+	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
 	if (hit) {
@@ -303,9 +302,10 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 		const float playerRadius = kWidth / 2.0f;
 		float beforePlayerX = worldTransform_.translation_.x;
 		info.moveAmount.x = std::max(0.0f, rect.right - (beforePlayerX - playerRadius - kBlank));
-		info.isHitWall = true; // 壁に当たった
+		info.isHitWall = true;
 	}
 }
+
 void Player::checkWallCollision(const CollisionMapInfo& info) { 
 	if (info.isHitWall) {
 		velocity_.x *= (1.0f - kAttenuationWall); // 壁に当たったときの減衰を適用	
