@@ -1,5 +1,7 @@
 #pragma once  
 #include "KamataEngine.h"  
+#include "AABB.h"
+class Player;
 class MapChipField;  
 
 class Enemy {  
@@ -11,9 +13,13 @@ public:
    void Draw();  
    void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; } 
    const KamataEngine::WorldTransform& GetWorldTransform() const { return worldTransform_; }
+   
+   KamataEngine::Vector3 GetWorldPosition();
+   AABB GetAABB();
+   void OnCollision(const Player* player);
 
 
-private:  
+   private:  
    KamataEngine::Model* model_ = nullptr;  
    KamataEngine::Camera* camera_ = nullptr;  
    KamataEngine::WorldTransform worldTransform_;  
@@ -24,6 +30,8 @@ private:
    static inline const float kWalkMotionAngleEnd = 0.5f;   // 歩き終わりの角度
    static inline const float kWalkMotionTime = 0.5f;       // 歩きの時間
    float walkTimer_ = 0.0f;                          // 歩きのタイマー
+   float enemyWidth_ = 1.0f;                               // 敵の幅
+   float enemyHeight_ = 1.0f;                        // 敵の高さ
 
 };
 

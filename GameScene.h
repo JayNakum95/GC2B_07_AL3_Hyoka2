@@ -15,6 +15,7 @@ class GameScene {
 	void Update();
 	void Draw();
 	void GenerateBlocks();
+	void CheckAllCollision();
 	std::list<Enemy*> enemies_;
 	private:
 	KamataEngine::Model* modelBlock_ = nullptr;

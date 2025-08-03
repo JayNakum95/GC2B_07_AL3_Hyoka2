@@ -27,11 +27,11 @@ GameScene::~GameScene() {
     
 	delete cameraController_; // カメラコントローラーのインスタンスを解放
 	cameraController_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+	delete enemy_;               // 敵キャラクターのインスタンスを解放
+	enemy_ = nullptr;            // メモリリークを防ぐためにポインタをnullptrに設定
 
-	delete enemy_; // 敵キャラクターのインスタンスを解放
-	enemy_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
-	for (Enemy* enemy : enemies_) {
-		delete enemy; // 敵キャラクターのインスタンスを解放
+	for (Enemy* newEnemy : enemies_) {
+		delete newEnemy; // 各敵キャラクターを解放
 	}
 	enemies_.clear(); // 敵キャラクターのリストをクリア
 }
@@ -49,7 +49,8 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
 	player_ = new Player();
-	for (int i = 0; i < 3; ++i) {
+	enemy_ = new Enemy(); // 敵キャラクターのインスタンスを作成
+	for (int i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();                                               // 新しい敵キャラクターを作成
 		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5+i, 18); // マップチップの位置を取得
 		newEnemy->Initialize(modelEnemy_, &camera_, enemyPosition);                  // 敵キャラクターの初期化
@@ -74,8 +75,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	player_->Update();
-	for (Enemy* enemy : enemies_) {
-		enemy->Update(); // 各敵キャラクターの更新
+	//enemy_->Update(); // 敵キャラクターの更新
+	for (Enemy* newEnemy : enemies_) {
+		newEnemy->Update(); // 各敵キャラクターの更新
 	}
 	skydome_->Update();
 
@@ -111,6 +113,7 @@ void GameScene::Update() {
 			
 		}
 	}
+	CheckAllCollision();
 }
 
 void GameScene::Draw() {
@@ -118,8 +121,9 @@ void GameScene::Draw() {
 	Model::PreDraw();
 	skydome_->Draw();
 	player_->Draw();
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw(); // 各敵キャラクターの描画
+	//enemy_->Draw(); // 敵キャラクターの描画
+	for (Enemy* newEnemy : enemies_) {
+		newEnemy->Draw(); // 各敵キャラクターの描画
 	}
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -166,4 +170,18 @@ void GameScene::GenerateBlocks() {
 			}
 		}
 	}
+}
+void GameScene::CheckAllCollision() { 
+	AABB aabb1, aabb2;
+	aabb1 = player_->GetAABB(); // プレイヤーのAABBを取得
+	for (Enemy* newEnemy : enemies_) {
+		aabb2 = newEnemy->GetAABB();   // 各敵キャラクターのAABBを取得
+		if(isCollisionAABB (aabb1, aabb2)) {
+		
+			player_->OnCollision(newEnemy); // プレイヤーと敵キャラクターの衝突処理
+			newEnemy->OnCollision(player_); // 敵キャラクターとプレイヤーの衝突処理
+		}
+	}
+
+
 }

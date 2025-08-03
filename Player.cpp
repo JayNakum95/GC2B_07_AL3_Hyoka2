@@ -132,6 +132,36 @@ void Player::playerMoveSet() {
 		turnTimer_ = 0.0f;
 	}
 }
+
+KamataEngine::Vector3 Player::GetWorldPosition() { 
+	KamataEngine::Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+
+}
+
+AABB Player::GetAABB() {
+	KamataEngine::Vector3 worldPos2 = GetWorldPosition();
+	AABB aabb;
+	aabb.min.x = worldPos2.x - kWidth / 2.0f;
+	aabb.min.y = worldPos2.y - kHeight / 2.0f;
+	aabb.min.z = worldPos2.z - kWidth / 2.0f; // Z軸は幅と同じと仮定
+	aabb.max.x = worldPos2.x + kWidth / 2.0f;
+	aabb.max.y = worldPos2.y + kHeight / 2.0f;
+	aabb.max.z = worldPos2.z + kWidth / 2.0f; // Z軸は幅と同じと仮定
+
+
+	return aabb;
+
+}
+
+void Player::OnCollision(const Enemy* enemy) {
+	(void)enemy;                                             // 引数の敵キャラクターは使用しないため、警告を抑制
+	velocity_.y = 0.10f;
+}
+
 Vector3 Player::CornerPosition(const Vector3& centre, Corner corner) {
 
 	Vector3 offsetTable[kNumCorner] = {

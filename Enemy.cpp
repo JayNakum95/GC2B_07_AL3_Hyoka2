@@ -31,4 +31,27 @@ void Enemy::Update() {
 void Enemy::Draw() {
 model_->Draw(worldTransform_, *camera_); // モデルの描画
 };
+KamataEngine::Vector3 Enemy::GetWorldPosition() {
+	KamataEngine::Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+}
+AABB Enemy::GetAABB() {
+	KamataEngine::Vector3 worldPos2 = GetWorldPosition();
+	AABB aabb;
+	aabb.min.x = worldPos2.x - enemyWidth_ / 2.0f;
+	aabb.min.y = worldPos2.y - enemyHeight_ / 2.0f;
+	aabb.min.z = worldPos2.z - enemyWidth_ / 2.0f; // Z軸は幅と同じと仮定
+	aabb.max.x = worldPos2.x + enemyWidth_ / 2.0f;
+	aabb.max.y = worldPos2.y + enemyHeight_ / 2.0f;
+	aabb.max.z = worldPos2.z + enemyWidth_ / 2.0f; // Z軸は幅と同じと仮定
+	return aabb;
+}
+
+void Enemy::OnCollision(const Player* player) { 
+	(void)player; 
+}
+
 

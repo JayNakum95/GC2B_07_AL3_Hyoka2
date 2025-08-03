@@ -1,7 +1,8 @@
 #pragma once
 #include "KamataEngine.h"
-
+#include "AABB.h"
 class MapChipField;
+class Enemy;
 
 class Player {
 public:
@@ -17,7 +18,9 @@ public:
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 	void playerMoveSet(); 
-
+	KamataEngine::Vector3 GetWorldPosition();
+	AABB GetAABB();
+	void OnCollision(const Enemy* enemy);
 
 private:
 	uint32_t textureHandle_ = 0;
