@@ -15,7 +15,7 @@ class GameScene {
 	void Update();
 	void Draw();
 	void GenerateBlocks();
-
+	std::list<Enemy*> enemies_;
 	private:
 	KamataEngine::Model* modelBlock_ = nullptr;
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;

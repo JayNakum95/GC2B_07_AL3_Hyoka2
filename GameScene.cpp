@@ -30,8 +30,10 @@ GameScene::~GameScene() {
 
 	delete enemy_; // 敵キャラクターのインスタンスを解放
 	enemy_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
-
-	
+	for (Enemy* enemy : enemies_) {
+		delete enemy; // 敵キャラクターのインスタンスを解放
+	}
+	enemies_.clear(); // 敵キャラクターのリストをクリア
 }
 void GameScene::Initialize() {
 	// 初期化処理の実装
@@ -47,7 +49,12 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
 	player_ = new Player();
-	enemy_ = new Enemy(); // 敵キャラクターのインスタンスを作成
+	for (int i = 0; i < 3; ++i) {
+		Enemy* newEnemy = new Enemy();                                               // 新しい敵キャラクターを作成
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5+i, 18); // マップチップの位置を取得
+		newEnemy->Initialize(modelEnemy_, &camera_, enemyPosition);                  // 敵キャラクターの初期化
+		enemies_.push_back(newEnemy);                                                // 敵キャラクターをリストに追加
+	}
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	GenerateBlocks();
@@ -67,7 +74,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	player_->Update();
-	enemy_->Update(); // 敵キャラクターの更新
+	for (Enemy* enemy : enemies_) {
+		enemy->Update(); // 各敵キャラクターの更新
+	}
 	skydome_->Update();
 
 	cameraController_->Update(); // カメラコントローラーの更新
@@ -109,7 +118,9 @@ void GameScene::Draw() {
 	Model::PreDraw();
 	skydome_->Draw();
 	player_->Draw();
-	enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw(); // 各敵キャラクターの描画
+	}
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
