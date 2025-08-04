@@ -1,5 +1,7 @@
 #include "GameScene.h"
 #include "AffineTransformation.h"
+#include "Fade.h"
+
 using namespace KamataEngine;
 GameScene::GameScene() {}
 GameScene::~GameScene() {
@@ -77,13 +79,56 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(11.0, 88.0, 6.0, 94.0f);                   // カメラの移動可能領域を設定
 	cameraController_->Reset();                                                  // カメラの位置をプレイヤーに合わせてリセット
 	                                                                             // Update the problematic line to separate the SetPosition call from the Initialize call
-	phase_ = Phase::kPlay;                                                       // ゲームのフェーズを初期化
+	phase_ = Phase::kfadeIn;                                                       // ゲームのフェーズを初期化
 	deathParticles_->Initialize(modelDeathParticles_, &camera_, playerPosition); // Initialize the death particles
+	fade_ = new Fade();                                                          // フェード効果のインスタンスを作成
+	fade_->Initialize();                                                         // フェード効果の初期化
+	fade_->start(Fade::Status::FadeIn, 1.0f);                                    // フェードインを開始、持続時間は1秒
 }
 
 void GameScene::Update() {
-
 	switch (phase_) {
+	case Phase::kfadeIn:
+		skydome_->Update();
+		fade_->Update(); // フェード効果の更新
+		if (fade_->isFinished()) {
+			phase_ = Phase::kPlay; // フェードインが完了したらフェーズを変更
+		}
+		player_->Update(); // プレイヤーの更新
+		for (Enemy* newEnemy : enemies_) {
+			newEnemy->Update(); // 各敵キャラクターの更新
+		}
+		cameraController_->Update(); // カメラコントローラーの更新
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock) {
+					continue; // ブロックが存在しない場合はスキップ
+				}
+				worldTransformBlock->matWorld_ = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
+				worldTransformBlock->TransferMatrix();
+			}
+		}
+#ifdef _DEBUG
+		if (Input::GetInstance()->TriggerKey(DIK_F1)) {
+			isDebugCameraActive_ = !isDebugCameraActive_;
+		}
+#endif
+		if (isDebugCameraActive_) {
+			debugCamera_->Update();
+			camera_.matView = debugCamera_->GetCamera().matView;
+			camera_.matProjection = debugCamera_->GetCamera().matProjection;
+			camera_.TransferMatrix();
+		} else {
+			camera_.UpdateMatrix();
+			camera_.TransferMatrix();
+		}
+		
+		ChangePhase(); // フェーズの変更をチェック
+		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+			phase_ = Phase::kPlay; // スペースキーが押されたらフェーズを変更
+		}
+		break;
+		
 	case Phase::kPlay:
 		skydome_->Update();
 
@@ -123,6 +168,8 @@ void GameScene::Update() {
 		break;
 	case Phase::kDeath:
 		skydome_->Update();
+		ChangePhase(); // フェーズの変更をチェック
+
 		for (Enemy* newEnemy : enemies_) {
 			newEnemy->Update(); // 各敵キャラクターの更新
 		}
@@ -157,6 +204,15 @@ void GameScene::Update() {
 		}
 
 		break;
+	case Phase::kFadeOut:
+		fade_->Update(); // フェードアウトの更新
+		if (fade_->isFinished()) {
+			finished_ = true; // フェードアウトが完了したらゲームを終了
+		}
+	
+		break;
+
+
 	}
 	
 	// enemy_->Update(); // 敵キャラクターの更新
@@ -167,9 +223,35 @@ void GameScene::Update() {
 void GameScene::Draw() {
 	// 描画処理の実装
 	switch (phase_) {
+	case Phase::kfadeIn:
+		Model::PreDraw();
+
+		// プレイヤー、敵、ブロック、スカイドームを描画する（フェード中も見えるように）
+		player_->Draw();
+		for (Enemy* newEnemy : enemies_) {
+			newEnemy->Draw();
+		}
+		skydome_->Draw();
+		for (auto& blockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : blockLine) {
+				if (!worldTransformBlock)
+					continue;
+				modelBlock_->Draw(*worldTransformBlock, camera_);
+			}
+		}
+
+		// その上にフェードを描画（画面を覆う透明度付き黒幕など）
+		fade_->Draw();
+
+		Model::PostDraw();
+		break;
+
+	
+
 	case Phase::kPlay:
 		Model::PreDraw();
-		player_->Draw();
+		player_->Draw(); // プレイヤーの描画
+		
 		for (Enemy* newEnemy : enemies_) {
 			newEnemy->Draw(); // 各敵キャラクターの描画
 		}
@@ -204,6 +286,23 @@ void GameScene::Draw() {
 		skydome_->Draw();
 		Model::PostDraw();
 
+		break;
+	case Phase::kFadeOut:
+		Model::PreDraw();
+		for (Enemy* newEnemy : enemies_) {
+			newEnemy->Draw(); // 各敵キャラクターの描画
+		}
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock) {
+					continue;
+				}
+				modelBlock_->Draw(*worldTransformBlock, camera_); // ブロックの描画
+			}
+		}
+		skydome_->Draw(); // スカイドームの描画
+		fade_->Draw(); // フェードアウトの描画
+		Model::PostDraw();
 		break;
 	}
 	
@@ -254,6 +353,15 @@ void GameScene::CheckAllCollision() {
 
 void GameScene::ChangePhase() {
 	switch (phase_) {
+	case Phase::kfadeIn:
+		fade_->Update();
+		if (fade_->isFinished()) {
+			phase_ = Phase::kPlay; // フェーズをプレイに変更
+		}
+
+		
+
+		break;
 	case Phase::kPlay:
 		if (player_->isDead()) { // プレイヤーが死亡した場合
 			phase_ = Phase::kDeath; // フェーズを死亡に変更
@@ -262,8 +370,16 @@ void GameScene::ChangePhase() {
 		}
 		break;
 	case Phase::kDeath:
-
-
+		if (deathParticles_ && deathParticles_->IsFinished()) {
+			phase_ = Phase::kFadeOut;                  // フェーズをフェードアウトに切り替え
+			fade_->start(Fade::Status::FadeOut, 1.0f); // フェードアウト開始
+		}
+		break;
+	case Phase::kFadeOut:
+		fade_->Update(); // フェードアウトの更新
+		if (fade_->isFinished()) {
+			finished_ = true; // フェードアウトが完了したらゲームを終了
+		}
 		break;
 	}
 }

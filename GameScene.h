@@ -7,16 +7,17 @@
 #include "MapChipField.h"
 #include "CameraController.h"
 #include "DeathParticles.h"
+#include "fade.h"
 class GameScene {
 
 	public:
 	enum class Phase {
+		kfadeIn,
 		kPlay,
-		kDeath
-
+		kDeath,
+		kFadeOut
 	};
-	Phase phase_ ; // ゲームのフェーズ
-
+	    Phase phase_ = Phase::kfadeIn; // ゲームのフェーズ
 
 
 
@@ -28,7 +29,8 @@ class GameScene {
 	void GenerateBlocks();
 	void CheckAllCollision();
 	void ChangePhase();
-
+	bool finished_ = false; // ゲームが終了したかどうかのフラグ
+	bool IsFinished() const { return finished_; } // ゲームが終了しているかどうかを返す関数
 	std::list<Enemy*> enemies_;
 	private:
 	KamataEngine::Model* modelBlock_ = nullptr;
@@ -46,5 +48,6 @@ class GameScene {
 	MapChipField* mapChipField_;
 	CameraController* cameraController_ = nullptr; // カメラコントローラー
 	DeathParticles* deathParticles_=nullptr;                // 死亡パーティクル
+	Fade* fade_ = nullptr;                         // フェード効果のインスタンス
 
 };
