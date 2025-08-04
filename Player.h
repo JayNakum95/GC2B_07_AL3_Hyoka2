@@ -21,6 +21,9 @@ public:
 	KamataEngine::Vector3 GetWorldPosition();
 	AABB GetAABB();
 	void OnCollision(const Enemy* enemy);
+	bool isDead_ = false; // プレイヤーが死亡したかどうかのフラグ
+
+	bool isDead() const { return isDead_; } // プレイヤーが死亡しているかどうかを返す関数
 
 private:
 	uint32_t textureHandle_ = 0;
@@ -46,7 +49,6 @@ private:
 		bool isHitWall = false;
 		KamataEngine::Vector3 moveAmount{0, 0, 0};
 	};
-
 	enum Corner { kLeftTop, kRightTop, kLeftBottom, kRightBottom, kNumCorner };
 
 	KamataEngine::Vector3 CornerPosition(const KamataEngine::Vector3& centre, Corner corner);

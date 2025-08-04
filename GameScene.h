@@ -10,6 +10,16 @@
 class GameScene {
 
 	public:
+	enum class Phase {
+		kPlay,
+		kDeath
+
+	};
+	Phase phase_ ; // ゲームのフェーズ
+
+
+
+
 	GameScene();
 	~GameScene();
 	void Initialize();
@@ -17,6 +27,8 @@ class GameScene {
 	void Draw();
 	void GenerateBlocks();
 	void CheckAllCollision();
+	void ChangePhase();
+
 	std::list<Enemy*> enemies_;
 	private:
 	KamataEngine::Model* modelBlock_ = nullptr;

@@ -41,6 +41,7 @@ void Player::Update() {
 
 
 	IfHitCeiling(collisionMapInfo);          // 天井に当たった場合の処理
+	
 
 	// 行列更新
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
@@ -164,7 +165,8 @@ AABB Player::GetAABB() {
 
 void Player::OnCollision(const Enemy* enemy) {
 	(void)enemy;                                             // 引数の敵キャラクターは使用しないため、警告を抑制
-	velocity_.y = 0.10f;
+	//deathflag
+	isDead_ = true; // プレイヤーが死亡したとフラグを設定
 }
 
 Vector3 Player::CornerPosition(const Vector3& centre, Corner corner) {
