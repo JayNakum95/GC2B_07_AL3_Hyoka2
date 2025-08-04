@@ -50,6 +50,11 @@ void Player::Update() {
 void Player::Draw() {
 	// プレイヤーの描画処理
 	model_->Draw(worldTransform_, *camera_); // モデルの描画
+	//debug 
+	for (int i = 0; i < 4; ++i) {
+		printf("[%.2f %.2f %.2f %.2f]\n", worldTransform_.matWorld_.m[i][0], worldTransform_.matWorld_.m[i][1], worldTransform_.matWorld_.m[i][2], worldTransform_.matWorld_.m[i][3]);
+	}
+	printf("Translation vector: %.2f, %.2f, %.2f\n", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
 }
 
 void Player::playerMoveSet() {

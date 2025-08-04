@@ -34,6 +34,8 @@ GameScene::~GameScene() {
 		delete newEnemy; // 各敵キャラクターを解放
 	}
 	enemies_.clear(); // 敵キャラクターのリストをクリア
+	delete deathParticles_; // 死亡パーティクルのインスタンスを解放
+	deathParticles_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
 }
 void GameScene::Initialize() {
 	// 初期化処理の実装
@@ -46,35 +48,46 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true); // スカイドームの初期化
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true); 
+    modelDeathParticles_ = Model::CreateFromOBJ("dp", true); // 死亡パーティクルのモデルを読み込む
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
 	player_ = new Player();
 	enemy_ = new Enemy(); // 敵キャラクターのインスタンスを作成
 	for (int i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();                                               // 新しい敵キャラクターを作成
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5+i, 18); // マップチップの位置を取得
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(11+i, 18); // マップチップの位置を取得
 		newEnemy->Initialize(modelEnemy_, &camera_, enemyPosition);                  // 敵キャラクターの初期化
 		enemies_.push_back(newEnemy);                                                // 敵キャラクターをリストに追加
 	}
+	deathParticles_ = new DeathParticles(); // 死亡パーティクルのインスタンスを作成
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	GenerateBlocks();
 	player_->SetMapChipField(mapChipField_);                                  // プレイヤーにマップチップフィールドを設定
 	enemy_->SetMapChipField(mapChipField_);
+
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(6, 18);
 	enemy_->Initialize(modelEnemy_, &camera_,enemyPosition); // 敵キャラクターの初期化
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 17); // マップチップの位置を取得
-	player_->Initialize(modelPlayer_, &camera_, playerPosition);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(6, 15); // マップチップの位置を取得
+	player_->Initialize(modelPlayer_, &camera_,playerPosition);
+	
+
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(&camera_);
 	cameraController_->SetTarget(player_); // カメラコントローラーにプレイヤーを設定
 	cameraController_->SetMovableArea(11.0, 88.0, 6.0, 94.0f); // カメラの移動可能領域を設定
 	cameraController_->Reset();                                    // カメラの位置をプレイヤーに合わせてリセット
+    // Update the problematic line to separate the SetPosition call from the Initialize call
+    deathParticles_->Initialize(modelDeathParticles_, &camera_,playerPosition); // Initialize the death particles
 }
 
 void GameScene::Update() {
 
 	player_->Update();
+	if (deathParticles_) {
+
+		deathParticles_->Update(); // パーティクルの更新
+	}
 	//enemy_->Update(); // 敵キャラクターの更新
 	for (Enemy* newEnemy : enemies_) {
 		newEnemy->Update(); // 各敵キャラクターの更新
@@ -114,6 +127,7 @@ void GameScene::Update() {
 		}
 	}
 	CheckAllCollision();
+	
 }
 
 void GameScene::Draw() {
@@ -137,8 +151,13 @@ void GameScene::Draw() {
 			
 		}
 	}
+	if (deathParticles_) {
+
+		deathParticles_->Draw(); // パーティクルの描画
+	}
 
 	Model::PostDraw();
+	
 }
 
 void GameScene::GenerateBlocks() {

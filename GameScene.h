@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "MapChipField.h"
 #include "CameraController.h"
+#include "DeathParticles.h"
 class GameScene {
 
 	public:
@@ -26,11 +27,12 @@ class GameScene {
 	KamataEngine::Model* modelSkydome_ = nullptr; // スカイドームモデル
 	KamataEngine::Model* modelPlayer_ = nullptr;
 	KamataEngine::Model* modelEnemy_ = nullptr; // 敵キャラクターモデル
-
+	KamataEngine::Model* modelDeathParticles_ = nullptr; // 死亡パーティクルモデル
 	Skydome* skydome_=nullptr;
 	Enemy* enemy_ = nullptr; // 敵キャラクター
 	Player* player_ = nullptr;
 	MapChipField* mapChipField_;
 	CameraController* cameraController_ = nullptr; // カメラコントローラー
+	DeathParticles* deathParticles_=nullptr;                // 死亡パーティクル
 
 };
