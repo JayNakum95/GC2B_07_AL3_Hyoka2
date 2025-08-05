@@ -4,6 +4,7 @@
 
 using namespace KamataEngine;
 GameScene::GameScene() {}
+
 GameScene::~GameScene() {
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -11,27 +12,22 @@ GameScene::~GameScene() {
 		}
 	}
 	worldTransformBlocks_.clear(); // ベクターをクリア
-
 	delete modelBlock_;
 	modelBlock_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
 	delete debugCamera_;   // デバッグカメラのインスタンスを解放
 	debugCamera_ = nullptr;
 	delete modelSkydome_;    // スカイドームのインスタンスを解放
 	modelSkydome_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
-
 	delete player_;
 	player_ = nullptr;       // プレイヤーのポインタをnullptrに設定
 	delete mapChipField_;    // マップチップフィールドのインスタンスを解放
 	mapChipField_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
-
 	delete skydome_;    // スカイドームのインスタンスを解放
 	skydome_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
-
 	delete cameraController_;    // カメラコントローラーのインスタンスを解放
 	cameraController_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
 	delete enemy_;               // 敵キャラクターのインスタンスを解放
 	enemy_ = nullptr;            // メモリリークを防ぐためにポインタをnullptrに設定
-
 	for (Enemy* newEnemy : enemies_) {
 		delete newEnemy; // 各敵キャラクターを解放
 	}
