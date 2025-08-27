@@ -25,7 +25,7 @@ void DrawScene();
 
 // Entry point for Windows applications
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-	KamataEngine::Initialize(L"GC2B_07_ナクム_ジェイ_ハルシュバルダン");
+	KamataEngine::Initialize(L"GC2B_07_ナクム_ジェイ_ハルシュバルダン_AL3");
 
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
