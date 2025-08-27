@@ -15,6 +15,8 @@ class GameScene {
 		kfadeIn,
 		kPlay,
 		kDeath,
+		kClear,
+
 		kFadeOut
 	};
 	    Phase phase_ = Phase::kfadeIn; // ゲームのフェーズ
@@ -30,7 +32,9 @@ class GameScene {
 	void CheckAllCollision();
 	void ChangePhase();
 	bool finished_ = false; // ゲームが終了したかどうかのフラグ
+	bool clear_ = false;
 	bool IsFinished() const { return finished_; } // ゲームが終了しているかどうかを返す関数
+	bool IsClear() const { return clear_; }
 	std::list<Enemy*> enemies_;
 	private:
 	KamataEngine::Model* modelBlock_ = nullptr;

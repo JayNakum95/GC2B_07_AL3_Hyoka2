@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include <numbers>
 #include "AffineTransformation.h"
+#include <cassert>
 
 Enemy::Enemy() {};
 Enemy::~Enemy() {};

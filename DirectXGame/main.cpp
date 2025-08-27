@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "KamataEngine.h"
 #include "TitleScene.h"
+#include "GameClear.h"
 #include <Windows.h>
 #include <crtdbg.h>
 
@@ -9,11 +10,12 @@ using namespace KamataEngine;
 // Global scene pointers
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
-
+GameClearScene* gameClearScene = nullptr;
 enum class Scene {
 	kUnknown = 0,
 	kTitle,
 	kGame,
+	kGameClear,
 };
 Scene scene = Scene::kUnknown;
 
@@ -31,6 +33,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	scene = Scene::kTitle;
 	titleScene = new TitleScene();
 	titleScene->Initialize();
+
 
 	while (true) {
 		if (KamataEngine::Update()) {
@@ -51,6 +54,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	delete gameScene;
 	gameScene = nullptr;
+
+	delete gameClearScene;
+	gameClearScene = nullptr;
 
 	KamataEngine::Finalize();
 
@@ -75,18 +81,36 @@ void ChangeScene() {
 		}
 		break;
 
-	case Scene::kGame:
-		if (gameScene && gameScene->IsFinished()) {
+    case Scene::kGame:
+    if (gameScene && gameScene->IsFinished()) {
+    if (gameScene->IsClear()) {
+    scene = Scene::kGameClear;
+
+    delete gameScene;
+    gameScene = nullptr;
+
+    gameClearScene = new GameClearScene();
+    gameClearScene->Initialize();
+    } else {
+    scene = Scene::kTitle;
+
+    delete gameScene;
+    gameScene = nullptr;
+
+    titleScene = new TitleScene();
+    titleScene->Initialize();
+    }
+    }
+    break;
+	case Scene::kGameClear:
+		if (gameClearScene && gameClearScene->IsFinished()) {
 			scene = Scene::kTitle;
-
-			delete gameScene;
-			gameScene = nullptr;
-
+			delete gameClearScene;
+			gameClearScene = nullptr;
 			titleScene = new TitleScene();
 			titleScene->Initialize();
 		}
 		break;
-
 	default:
 		break;
 	}
@@ -104,7 +128,10 @@ void UpdateScene() {
 		if (gameScene)
 			gameScene->Update();
 		break;
-
+	case Scene::kGameClear:
+		if (gameClearScene)
+			gameClearScene->Update();
+		break;
 	default:
 		break;
 	}
@@ -121,6 +148,10 @@ void DrawScene() {
 	case Scene::kGame:
 		if (gameScene)
 			gameScene->Draw();
+		break;
+	case Scene::kGameClear:
+		if (gameClearScene)
+			gameClearScene->Draw();
 		break;
 
 	default:

@@ -25,6 +25,10 @@ public:
 
 	bool isDead() const { return isDead_; } // プレイヤーが死亡しているかどうかを返す関数
 
+    // Add this member variable to Player class (private section)
+    float dashDirection_;
+    static inline const float kDashDuration = 0.2f;
+    static inline const float kDashSpeed = 0.3f;
 private:
 	uint32_t textureHandle_ = 0;
 	KamataEngine::Model* model_ = nullptr;
@@ -42,7 +46,18 @@ private:
 		kRight,
 		kLeft,
 	};
+	enum class Behavior {
+		kRoot,
+		kAttack,
+		kUnknown,
+	};
+	enum class AttackPhase{
+		resorvoir,
+		rush,
+		cooldown,
 
+	};
+	AttackPhase attackPhase_;
 	struct CollisionMapInfo {
 		bool isHitCeiling = false;
 		bool isLanded = false;
@@ -50,7 +65,7 @@ private:
 		KamataEngine::Vector3 moveAmount{0, 0, 0};
 	};
 	enum Corner { kLeftTop, kRightTop, kLeftBottom, kRightBottom, kNumCorner };
-
+	uint32_t attackParameter_ = 0;
 	KamataEngine::Vector3 CornerPosition(const KamataEngine::Vector3& centre, Corner corner);
 	void MapCollisionCheckJump(CollisionMapInfo& info);
 	void MapCollisionCheckFall(CollisionMapInfo& info);
@@ -58,6 +73,10 @@ private:
 	void MapCollisionLeft(CollisionMapInfo& info);
 	void checkWallCollision(const CollisionMapInfo& info);
 	void ChangePlayerCondition(const CollisionMapInfo& info);
+	void BehaviorRootInit();
+	void BehaviorAttackInit();
+	void BehaviorRootUpdate();
+	void BehaviorAttackUpdate();
 
 	LRDirection lrDirection_ = LRDirection::kRight;
 	float turnFirstRotationY_ = 0.0f;
@@ -75,4 +94,6 @@ private:
 
 	void ApplyCollisionResult(const CollisionMapInfo& info);
 	void IfHitCeiling(CollisionMapInfo& info);
+	Behavior behavior_ = Behavior::kRoot;
+	Behavior behaviorRequest_ = Behavior::kUnknown;
 };
