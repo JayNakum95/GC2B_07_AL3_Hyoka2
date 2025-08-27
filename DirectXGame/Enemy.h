@@ -18,8 +18,11 @@ public:
    AABB GetAABB();
    void OnCollision(const Player* player);
 
+   private:
+   float directionTimer_ = 0.0f;    // how long until next flip
+   float directionInterval_ = 0.0f; // random duration before flipping
 
-   private:  
+    
    KamataEngine::Model* model_ = nullptr;  
    KamataEngine::Camera* camera_ = nullptr;  
    KamataEngine::WorldTransform worldTransform_;  
@@ -34,4 +37,5 @@ public:
    float enemyHeight_ = 1.0f;                        // 敵の高さ
 
 };
+
 

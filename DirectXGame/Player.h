@@ -36,11 +36,11 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 	MapChipField* mapChipField_ = nullptr;
 
-	static inline const float kAcceleration = 0.002f;
-	static inline const float kAttenuation = 0.058f;
-	static inline const float kAttenuationLanding = 0.01f;
-	static inline const float kAttenuationWall = 0.05f;
-	static inline const float kLimitRunSpeed = 0.3f;
+	static inline const float kAcceleration = 0.003f;
+	static inline const float kAttenuation = 0.048f;
+	static inline const float kAttenuationLanding = 0.005f;
+	static inline const float kAttenuationWall = 0.04f;
+	static inline const float kLimitRunSpeed = 0.2f;
 
 	enum class LRDirection {
 		kRight,

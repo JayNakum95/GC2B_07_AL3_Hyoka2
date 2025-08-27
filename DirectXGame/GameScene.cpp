@@ -19,11 +19,11 @@ GameScene::~GameScene() {
 	delete modelSkydome_;    // スカイドームのインスタンスを解放
 	modelSkydome_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
 	delete player_;
-	player_ = nullptr;       // プレイヤーのポインタをnullptrに設定
-	delete mapChipField_;    // マップチップフィールドのインスタンスを解放
-	mapChipField_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
-	delete skydome_;    // スカイドームのインスタンスを解放
-	skydome_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
+	player_ = nullptr;           // プレイヤーのポインタをnullptrに設定
+	delete mapChipField_;        // マップチップフィールドのインスタンスを解放
+	mapChipField_ = nullptr;     // メモリリークを防ぐためにポインタをnullptrに設定
+	delete skydome_;             // スカイドームのインスタンスを解放
+	skydome_ = nullptr;          // メモリリークを防ぐためにポインタをnullptrに設定
 	delete cameraController_;    // カメラコントローラーのインスタンスを解放
 	cameraController_ = nullptr; // メモリリークを防ぐためにポインタをnullptrに設定
 	delete enemy_;               // 敵キャラクターのインスタンスを解放
@@ -51,11 +51,21 @@ void GameScene::Initialize() {
 	skydome_->Initialize(modelSkydome_, &camera_);
 	player_ = new Player();
 	enemy_ = new Enemy(); // 敵キャラクターのインスタンスを作成
-	for (int i = 0; i < 1; ++i) {
-		Enemy* newEnemy = new Enemy();                                                // 新しい敵キャラクターを作成
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(11 + i, 18); // マップチップの位置を取得
-		newEnemy->Initialize(modelEnemy_, &camera_, enemyPosition);                   // 敵キャラクターの初期化
-		enemies_.push_back(newEnemy);                                                 // 敵キャラクターをリストに追加
+	for (int i = 0; i < 30; ++i) {
+		Enemy* newEnemy = new Enemy(); // 新しい敵キャラクターを作成
+
+		// Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(11 + i, 18); // マップチップの位置を取得
+		//  custom enemy positions
+		Vector3 customPositions[30] = {
+		    Vector3(12.0f, 1.0f, 0.0f), Vector3(20.0f, 4.0f, 0.0f), Vector3(28.0f, 8.0f, 0.0f), Vector3(36.0f, 10.0f, 0.0f), Vector3(44.0f, 6.0f, 0.0f),
+		    Vector3(52.0f, 3.0f, 0.0f), Vector3(60.0f, 7.0f, 0.0f), Vector3(68.0f, 5.0f, 0.0f), Vector3(76.0f, 2.0f, 0.0f),  Vector3(84.0f, 9.0f, 0.0f),
+		    Vector3(16.0f, 12.0f, 0.0f), Vector3(24.0f, 14.0f, 0.0f), Vector3(32.0f, 11.0f, 0.0f), Vector3(40.0f, 13.0f, 0.0f), Vector3(48.0f, 15.0f, 0.0f),
+			Vector3(56.0f, 12.0f, 0.0f), Vector3(64.0f, 14.0f, 0.0f), Vector3(72.0f, 11.0f, 0.0f), Vector3(80.0f, 13.0f, 0.0f), Vector3(88.0f, 15.0f, 0.0f),
+		    Vector3(18.0f, 18.0f, 0.0f), Vector3(34.0f, 18.0f, 0.0f), Vector3(75.0f, 50.0f, 0.0f), Vector3(76.0f, 18.0f, 0.0f), Vector3(84.0f, 18.0f, 0.0f),
+		    Vector3(90.0f, 18.0f, 0.0f), Vector3(70.0f, 50.0f, 0.0f), Vector3(60.0f, 50.0f, 0.0f), Vector3(50.0f, 50.0f, 0.0f), Vector3(40.0f, 50.0f, 0.0f)
+		};
+		newEnemy->Initialize(modelEnemy_, &camera_, customPositions[i]); // 敵キャラクターの初期化
+		enemies_.push_back(newEnemy);                                    // 敵キャラクターをリストに追加
 	}
 	deathParticles_ = new DeathParticles(); // 死亡パーティクルのインスタンスを作成
 	mapChipField_ = new MapChipField;
@@ -75,7 +85,7 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(11.0, 88.0, 6.0, 94.0f);                   // カメラの移動可能領域を設定
 	cameraController_->Reset();                                                  // カメラの位置をプレイヤーに合わせてリセット
 	                                                                             // Update the problematic line to separate the SetPosition call from the Initialize call
-	phase_ = Phase::kfadeIn;                                                       // ゲームのフェーズを初期化
+	phase_ = Phase::kfadeIn;                                                     // ゲームのフェーズを初期化
 	deathParticles_->Initialize(modelDeathParticles_, &camera_, playerPosition); // Initialize the death particles
 	fade_ = new Fade();                                                          // フェード効果のインスタンスを作成
 	fade_->Initialize();                                                         // フェード効果の初期化
@@ -118,13 +128,13 @@ void GameScene::Update() {
 			camera_.UpdateMatrix();
 			camera_.TransferMatrix();
 		}
-		
+
 		ChangePhase(); // フェーズの変更をチェック
 		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 			phase_ = Phase::kPlay; // スペースキーが押されたらフェーズを変更
 		}
 		break;
-		
+
 	case Phase::kPlay:
 		skydome_->Update();
 
@@ -203,7 +213,7 @@ void GameScene::Update() {
 	case Phase::kClear:
 		skydome_->Update();
 		player_->Update(); // プレイヤーの更新
-		ChangePhase();    // フェーズの変更をチェック
+		ChangePhase();     // フェーズの変更をチェック
 		for (Enemy* newEnemy : enemies_) {
 			newEnemy->Update(); // 各敵キャラクターの更新
 		}
@@ -223,12 +233,10 @@ void GameScene::Update() {
 		if (fade_->isFinished()) {
 			finished_ = true; // フェードアウトが完了したらゲームを終了
 		}
-	
+
 		break;
-
-
 	}
-	
+
 	// enemy_->Update(); // 敵キャラクターの更新
 
 	// 更新処理の実装
@@ -260,12 +268,10 @@ void GameScene::Draw() {
 		Model::PostDraw();
 		break;
 
-	
-
 	case Phase::kPlay:
 		Model::PreDraw();
 		player_->Draw(); // プレイヤーの描画
-		
+
 		for (Enemy* newEnemy : enemies_) {
 			newEnemy->Draw(); // 各敵キャラクターの描画
 		}
@@ -332,11 +338,10 @@ void GameScene::Draw() {
 			}
 		}
 		skydome_->Draw(); // スカイドームの描画
-		fade_->Draw(); // フェードアウトの描画
+		fade_->Draw();    // フェードアウトの描画
 		Model::PostDraw();
 		break;
 	}
-	
 }
 
 void GameScene::GenerateBlocks() {
@@ -390,18 +395,16 @@ void GameScene::ChangePhase() {
 			phase_ = Phase::kPlay; // フェーズをプレイに変更
 		}
 
-		
-
 		break;
 	case Phase::kPlay:
-		if (player_->isDead()) { // プレイヤーが死亡した場合
-			phase_ = Phase::kDeath; // フェーズを死亡に変更
-			const Vector3& deathParticlesPosition = player_->GetWorldPosition();                      // プレイヤーの位置を取得
+		if (player_->isDead()) {                                                                 // プレイヤーが死亡した場合
+			phase_ = Phase::kDeath;                                                              // フェーズを死亡に変更
+			const Vector3& deathParticlesPosition = player_->GetWorldPosition();                 // プレイヤーの位置を取得
 			deathParticles_->Initialize(modelDeathParticles_, &camera_, deathParticlesPosition); // 死亡パーティクルの初期化
 		}
-		if (player_->GetWorldPosition().x > 90) { // プレイヤーが特定の位置を超えた場合
-			phase_ = Phase::kClear; // フェーズをクリアに変更
-			clear_ = true;          // ゲームクリアフラグを設定
+		if (player_->GetWorldPosition().x > 99) { // プレイヤーが特定の位置を超えた場合
+			phase_ = Phase::kClear;               // フェーズをクリアに変更
+			clear_ = true;                        // ゲームクリアフラグを設定
 		}
 		break;
 	case Phase::kDeath:

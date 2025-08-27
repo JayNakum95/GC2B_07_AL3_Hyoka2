@@ -99,7 +99,7 @@ void Player::playerMoveSet() {
 		}
 
 		// ジャンプ処理（上キー）
-		if (Input::GetInstance()->PushKey(DIK_UP)) {
+		if (Input::GetInstance()->PushKey(DIK_W)) {
 			velocity_.y = kJumpAcceleration;
 			onGround_ = false;
 		}
@@ -107,8 +107,8 @@ void Player::playerMoveSet() {
 
 	// 地上の移動処理
 	if (onGround_) {
-		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+		if (Input::GetInstance()->PushKey(DIK_D) || Input::GetInstance()->PushKey(DIK_A)) {
+			if (Input::GetInstance()->PushKey(DIK_D)) {
 				if (lrDirection_ != LRDirection::kRight) {
 					lrDirection_ = LRDirection::kRight;
 					turnFirstRotationY_ = worldTransform_.rotation_.y;
@@ -118,7 +118,7 @@ void Player::playerMoveSet() {
 				if (velocity_.x < 0) {
 					velocity_.x *= (1.0f - kAttenuation);
 				}
-			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+			} else if (Input::GetInstance()->PushKey(DIK_A)) {
 				if (lrDirection_ != LRDirection::kLeft) {
 					lrDirection_ = LRDirection::kLeft;
 					turnFirstRotationY_ = worldTransform_.rotation_.y;

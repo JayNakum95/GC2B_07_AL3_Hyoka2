@@ -9,7 +9,7 @@ GameClearScene::~GameClearScene() {
 	fade_ = nullptr; // フェード効果のインスタンスを解放
 }
 void GameClearScene::Initialize() {
-	modelGameClearSceneObj_ = Model::CreateFromOBJ("titleScene", true); // タイトルシーンオブジェクトのモデルを読み込む
+	modelGameClearSceneObj_ = Model::CreateFromOBJ("ClearScene", true); // タイトルシーンオブジェクトのモデルを読み込む
 	gameClearSceneObj_ = new GameClearSceneObj();
 	gameClearSceneObj_->Initialize(modelGameClearSceneObj_, &camera_, Vector3(0.0f, 0.0f, 0.0f)); // タイトルシーンオブジェクトの初期化
 	camera_.Initialize();

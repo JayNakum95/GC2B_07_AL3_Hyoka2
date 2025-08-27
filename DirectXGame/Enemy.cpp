@@ -8,23 +8,49 @@ Enemy::~Enemy() {};
 
 
 void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position) {
-	assert(model); // モデルがnullptrでないことを確認
+	assert(model);
 	model_ = model;
 	camera_ = camera;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2;
-	velocity_ = {-kWalkSpeed,0,0};
-	walkTimer_ = 0.0f; // 歩きのタイマーを初期化
+
+	velocity_ = {-kWalkSpeed, 0, 0};
+	walkTimer_ = 0.0f;
+
+	// assign random interval (between 1.5s and 3.5s for example)
+	directionInterval_ = 1.5f + static_cast<float>(rand()) / RAND_MAX * 2.0f;
+	directionTimer_ = 0.0f;
 }
 void Enemy::Update() {
 	
-	// 敵の移動処理
-	worldTransform_.translation_.x += velocity_.x; // 位置を更新
-	walkTimer_ += 1.0f / 60.0f;                    // タイマーを更新（1フレームあたりの時間を加算）
-///回転アニメーション
-	float walkMotionAngle = std::sin(walkTimer_ * (std::numbers::pi_v<float> / kWalkMotionTime)) * (kWalkMotionAngleEnd - kWalkMotionAngleStart) + kWalkMotionAngleStart;
-	worldTransform_.rotation_.x = walkMotionAngle; // 回転を更新
+	 worldTransform_.translation_.x += velocity_.x;
+
+	// walking animation
+	walkTimer_ += 1.0f / 60.0f;
+	float phase = walkTimer_ * (std::numbers::pi_v<float> / kWalkMotionTime);
+	float walkMotionAngle = std::sin(phase) * (kWalkMotionAngleEnd - kWalkMotionAngleStart) + kWalkMotionAngleStart;
+	worldTransform_.rotation_.x = walkMotionAngle;
+
+	// random direction flip
+	directionTimer_ += 1.0f / 60.0f; // add frame time
+	if (directionTimer_ >= directionInterval_) {
+		// flip direction
+		velocity_.x = -velocity_.x;
+
+		// reset timer & new random interval
+		directionTimer_ = 0.0f;
+		directionInterval_ = 1.5f + static_cast<float>(rand()) / RAND_MAX * 2.0f;
+
+		// also rotate model visually
+		if (velocity_.x > 0) {
+			worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2; // face right
+		} else {
+			worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2; // face left
+		}
+	}
+
+	// update transform matrix
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	worldTransform_.TransferMatrix();
 
