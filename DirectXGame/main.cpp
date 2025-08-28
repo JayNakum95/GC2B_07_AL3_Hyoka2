@@ -2,6 +2,7 @@
 #include "KamataEngine.h"
 #include "TitleScene.h"
 #include "GameClear.h"
+#include "GameOverScene.h"
 #include <Windows.h>
 #include <crtdbg.h>
 
@@ -11,11 +12,13 @@ using namespace KamataEngine;
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 GameClearScene* gameClearScene = nullptr;
+GameOverScene* gameOverScene = nullptr;
 enum class Scene {
 	kUnknown = 0,
 	kTitle,
 	kGame,
 	kGameClear,
+	kGameOver
 };
 Scene scene = Scene::kUnknown;
 
@@ -58,6 +61,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete gameClearScene;
 	gameClearScene = nullptr;
 
+	delete gameOverScene;
+	gameOverScene = nullptr;
+
 	KamataEngine::Finalize();
 
 	// Memory leak check (debug only)
@@ -92,13 +98,13 @@ void ChangeScene() {
     gameClearScene = new GameClearScene();
     gameClearScene->Initialize();
     } else {
-    scene = Scene::kTitle;
+    scene = Scene::kGameOver;
 
     delete gameScene;
     gameScene = nullptr;
 
-    titleScene = new TitleScene();
-    titleScene->Initialize();
+    gameOverScene = new GameOverScene();
+    gameOverScene->Initialize();
     }
     }
     break;
@@ -107,6 +113,15 @@ void ChangeScene() {
 			scene = Scene::kTitle;
 			delete gameClearScene;
 			gameClearScene = nullptr;
+			titleScene = new TitleScene();
+			titleScene->Initialize();
+		}
+		break;
+	case Scene::kGameOver:
+		if (gameOverScene && gameOverScene->IsFinished()) {
+			scene = Scene::kTitle;
+			delete gameOverScene;
+			gameOverScene = nullptr;
 			titleScene = new TitleScene();
 			titleScene->Initialize();
 		}
@@ -132,6 +147,10 @@ void UpdateScene() {
 		if (gameClearScene)
 			gameClearScene->Update();
 		break;
+	case Scene::kGameOver:
+		if (gameOverScene)
+			gameOverScene->Update();
+		break;
 	default:
 		break;
 	}
@@ -152,6 +171,10 @@ void DrawScene() {
 	case Scene::kGameClear:
 		if (gameClearScene)
 			gameClearScene->Draw();
+		break;
+	case Scene::kGameOver:
+		if (gameOverScene)
+			gameOverScene->Draw();
 		break;
 
 	default:

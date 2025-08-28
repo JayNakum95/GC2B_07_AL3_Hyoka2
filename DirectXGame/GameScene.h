@@ -16,8 +16,8 @@ class GameScene {
 		kPlay,
 		kDeath,
 		kClear,
-
-		kFadeOut
+		kFadeOut,
+		kGameOver
 	};
 	    Phase phase_ = Phase::kfadeIn; // ゲームのフェーズ
 

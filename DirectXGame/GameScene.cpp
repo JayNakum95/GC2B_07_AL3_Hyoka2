@@ -235,6 +235,8 @@ void GameScene::Update() {
 		}
 
 		break;
+
+
 	}
 
 	// enemy_->Update(); // 敵キャラクターの更新
@@ -341,6 +343,8 @@ void GameScene::Draw() {
 		fade_->Draw();    // フェードアウトの描画
 		Model::PostDraw();
 		break;
+	
+
 	}
 }
 
@@ -423,5 +427,6 @@ void GameScene::ChangePhase() {
 			finished_ = true; // フェードアウトが完了したらゲームを終了
 		}
 		break;
+	
 	}
 }
